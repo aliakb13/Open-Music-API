@@ -6,7 +6,7 @@ const AlbumValidator = {
     const validationResult = AlbumValidateSchema.validate(payload);
 
     if (validationResult.error) {
-      console.log('Kena di validasi joi', validationResult.error.message);
+      // console.log('Kena di validasi joi', validationResult.error.message);
       throw new InvariantError(validationResult.error.message);
     }
   },

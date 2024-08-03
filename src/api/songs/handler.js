@@ -1,5 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 const autoBind = require('auto-bind');
+const { convertGetSongs } = require('../../utils');
 
 class SongsHandler {
   constructor(service, validator) {
@@ -24,12 +25,35 @@ class SongsHandler {
     return response;
   }
 
-  async getSongsHandler() {
-    const songs = await this._service.getSongs();
+  async getSongsHandler(request) {
+    const { title, performer } = request.query;
+    let songsQuery;
+
+    if (title && performer) {
+      songsQuery = await this._service.getSongs(title, performer);
+      // console.log('title and performer was passed');
+    }
+
+    if (title && !performer) {
+      songsQuery = await this._service.getSongs(title, null);
+      // console.log('title was passed and performer was null');
+    }
+
+    if (!title && performer) {
+      songsQuery = await this._service.getSongs(null, performer);
+      // console.log('title was null and performer was passed');
+    }
+
+    if (!title && !performer) {
+      songsQuery = await this._service.getSongs();
+      // console.log('title and performer was null');
+    }
+
+    const mapSongs = songsQuery.map(convertGetSongs);
     return {
       status: 'success',
       data: {
-        songs,
+        songs: mapSongs,
       },
     };
   }

@@ -22,6 +22,14 @@ exports.up = (pgm) => {
       type: 'INT',
       notNull: true,
     },
+    created_at: {
+      type: 'TIMESTAMPTZ',
+      notNull: true,
+    },
+    updated_at: {
+      type: 'TIMESTAMPTZ',
+      notNull: true,
+    },
   });
 
   pgm.createTable('songs', {
@@ -48,10 +56,18 @@ exports.up = (pgm) => {
     duration: {
       type: 'INT',
     },
-    albumId: {
+    album_id: {
       type: 'VARCHAR(100)',
       references: 'albums',
       onDelete: 'CASCADE',
+    },
+    created_at: {
+      type: 'TIMESTAMPTZ',
+      notNull: true,
+    },
+    updated_at: {
+      type: 'TIMESTAMPTZ',
+      notNull: true,
     },
   });
 };
@@ -62,6 +78,6 @@ exports.up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 exports.down = (pgm) => {
-  pgm.dropTable('albums');
   pgm.dropTable('songs');
+  pgm.dropTable('albums');
 };
