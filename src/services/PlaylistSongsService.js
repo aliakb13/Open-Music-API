@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
+const { convertGetSongs } = require('../utils');
 // const NotFoundError = require('../exceptions/NotFoundError');
 
 class PlaylistSongsService {
@@ -17,6 +18,8 @@ class PlaylistSongsService {
     };
 
     await this._pool.query(query);
+
+    // console.log('from add playlist songs', result.rows[0]);
   }
 
   async getSongsFromPlaylist(playlistId) {
@@ -28,9 +31,9 @@ class PlaylistSongsService {
       songs.id AS id, songs.title AS title, songs.performer
       FROM playlists 
       JOIN users ON playlists.owner = users.id
-      JOIN playlist_songs ON playlists.playlist_id = playlist_songs.playlist_id
+      JOIN playlist_songs ON playlists.id = playlist_songs.playlist_id
       JOIN songs ON playlist_songs.song_id = songs.id
-      WHERE playlist.id = $1`,
+      WHERE playlists.id = $1`,
       values: [playlistId],
     };
 
@@ -40,9 +43,16 @@ class PlaylistSongsService {
     //   throw new NotFoundError('Playlist tidak ditemukan');
     // }
 
-    console.log(result);
+    const playlist = {
+      id: result.rows[0].playlist_id,
+      name: result.rows[0].playlist_name,
+      username: result.rows[0].username,
+      songs: result.rows.map(convertGetSongs),
+    };
 
-    return result.rows;
+    console.log(playlist);
+
+    return playlist;
   }
 
   async deleteSongFromPlaylist(playlistId, songId) {
@@ -51,7 +61,9 @@ class PlaylistSongsService {
       values: [playlistId, songId],
     };
 
-    await this._pool.query(query);
+    const result = await this._pool.query(query);
+
+    console.log('from delete playlist songs', result.rows[0]);
   }
 }
 

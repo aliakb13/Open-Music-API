@@ -38,7 +38,9 @@ class PlaylistSongsHandler {
 
     const response = h.response({
       status: 'success',
-      playlist: songsFromPlaylist,
+      data: {
+        playlist: songsFromPlaylist,
+      },
     });
     response.code(200);
     return response;

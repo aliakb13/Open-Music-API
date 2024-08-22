@@ -16,7 +16,6 @@ exports.up = (pgm) => {
     },
     playlist_id: {
       type: 'VARCHAR(100)',
-      unique: true,
       notNull: true,
     },
     song_id: {
@@ -31,6 +30,9 @@ exports.up = (pgm) => {
      menambahkan foreign key untuk kolom song_id songs.id
   */
 
+  pgm.addConstraint('playlist_songs', 'unique_playlist_song', {
+    unique: ['playlist_id', 'song_id'],
+  });
   pgm.addConstraint('playlist_songs', 'fk_playlist_songs.playlist_id_playlists.id', 'FOREIGN KEY(playlist_id) REFERENCES playlists(id) ON DELETE CASCADE');
   pgm.addConstraint('playlist_songs', 'fk_playlist_songs.song_id_songs.id', 'FOREIGN KEY(song_id) REFERENCES songs(id) ON DELETE CASCADE');
 };

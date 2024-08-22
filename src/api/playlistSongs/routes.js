@@ -17,8 +17,11 @@ const routes = (handler) => [
   },
   {
     method: 'DELETE',
-    path: '/playlist/{id}/songs',
+    path: '/playlists/{id}/songs',
     handler: handler.deletePlaylistSongHandler,
+    options: {
+      auth: 'playlistsapp_jwt',
+    },
   },
 ];
 
