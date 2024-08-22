@@ -38,25 +38,19 @@ class SongService {
         values: [`%${title}%`, `%${performer}%`],
       };
       result = await this._pool.query(query);
-      // console.log('title and performer was passed');
     }
 
     if (title && !performer) {
       result = await this._pool.query('SELECT * FROM songs WHERE title ILIKE $1', [`%${title}%`]);
-      // console.log('title was passed, performer was null');
-      // console.log(result);
     }
 
     if (!title && performer) {
       result = await this._pool.query('SELECT * FROM songs WHERE performer ILIKE $1', [`%${performer}%`]);
-      // console.log('title was null, performer was passed');
     }
 
     if (!title && !performer) {
       result = await this._pool.query('SELECT * FROM songs');
-      // console.log('title and performer was null');
     }
-    // console.log(result);
     return result.rows;
   }
 
@@ -120,6 +114,19 @@ class SongService {
       throw new NotFoundError('Gagal menghapus lagu. Lagu tidak ditemukan!');
     }
     return result.rows[0].title;
+  }
+
+  async checkSong(id) {
+    const query = {
+      text: 'SELECT * FROM songs WHERE id = $1',
+      values: [id],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rows.length) {
+      throw new NotFoundError('Lagu tidak ditemukan');
+    }
   }
 }
 

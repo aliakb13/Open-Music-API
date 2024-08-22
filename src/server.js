@@ -1,5 +1,6 @@
 require('dotenv').config();
 const Hapi = require('@hapi/hapi');
+const Jwt = require('@hapi/jwt');
 const ClientError = require('./exceptions/ClientError');
 
 // albums
@@ -23,11 +24,23 @@ const AuthenticationsService = require('./services/AuthenticationsService');
 const authenticationValidator = require('./validator/authentications');
 const TokenManager = require('./tokenize/TokenManager');
 
+// playlists
+const playlistPlugin = require('./api/playlists');
+const PlaylistsService = require('./services/PlaylistsService');
+const PlaylistValidator = require('./validator/playlists');
+
+// playlist_songs
+const playlistSongsPlugin = require('./api/playlistSongs');
+const PlaylistSongsService = require('./services/PlaylistSongsService');
+const PlaylistSongsValidator = require('./validator/playlistSongs');
+
 const init = async () => {
   const albumService = new AlbumService();
-  const songservice = new SongService();
+  const songService = new SongService();
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
+  const playlistsService = new PlaylistsService();
+  const playlistSongsService = new PlaylistSongsService();
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -42,11 +55,34 @@ const init = async () => {
     },
   });
 
+  server.register({
+    plugin: Jwt,
+  });
+
   // server.route({
   //   method: 'GET',
   //   path: '/',
   //   handler: () => 'Hello World!',
+  //   options: {
+  //     auth: 'playlistsapp_jwt',
+  //   },
   // });
+
+  server.auth.strategy('playlistsapp_jwt', 'jwt', {
+    keys: process.env.ACCESS_TOKEN_KEY,
+    verify: {
+      aud: false,
+      iss: false,
+      sub: false,
+      maxAgeSec: process.env.ACCESS_TOKEN_AGE,
+    },
+    validate: (artifacts) => ({
+      isValid: true,
+      credentials: {
+        id: artifacts.decoded.payload.id,
+      },
+    }),
+  });
 
   await server.register([
     {
@@ -59,7 +95,7 @@ const init = async () => {
     {
       plugin: songPlugin,
       options: {
-        service: songservice,
+        service: songService,
         validator: songValidator,
       },
     },
@@ -77,6 +113,22 @@ const init = async () => {
         usersService,
         tokenManager: TokenManager,
         validator: authenticationValidator,
+      },
+    },
+    {
+      plugin: playlistPlugin,
+      options: {
+        playlistsService,
+        validator: PlaylistValidator,
+      },
+    },
+    {
+      plugin: playlistSongsPlugin,
+      options: {
+        playlistSongsService,
+        playlistsService,
+        songService,
+        validator: PlaylistSongsValidator,
       },
     },
   ]);
