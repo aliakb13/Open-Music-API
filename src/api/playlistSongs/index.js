@@ -9,6 +9,7 @@ module.exports = {
       playlistSongsService,
       playlistsService,
       songService,
+      playlistSongActivitiesService,
       validator,
     } = options;
 
@@ -16,6 +17,7 @@ module.exports = {
       playlistSongsService,
       playlistsService,
       songService,
+      playlistSongActivitiesService,
       validator,
     );
     server.route(routes(playlistSongsHandler));

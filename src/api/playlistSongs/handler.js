@@ -2,10 +2,17 @@ const autoBind = require('auto-bind');
 
 /* eslint-disable no-underscore-dangle */
 class PlaylistSongsHandler {
-  constructor(playlistSongsService, playlistsService, songsService, validator) {
+  constructor(
+    playlistSongsService,
+    playlistsService,
+    songsService,
+    playlistSongActivitiesService,
+    validator,
+  ) {
     this._playlistSongsService = playlistSongsService;
     this._playlistsService = playlistsService;
     this._songsService = songsService;
+    this._playlistSongActivitiesService = playlistSongActivitiesService;
     this._validator = validator;
 
     autoBind(this);
@@ -20,6 +27,8 @@ class PlaylistSongsHandler {
     await this._songsService.checkSong(songId);
     await this._playlistsService.checkPlaylist(playlistId, userId);
     await this._playlistSongsService.addSongToPlaylist(playlistId, songId);
+    // eslint-disable-next-line max-len
+    await this._playlistSongActivitiesService.insertActivities(playlistId, songId, userId, 'add');
 
     const response = h.response({
       status: 'success',
@@ -56,6 +65,8 @@ class PlaylistSongsHandler {
     await this._songsService.checkSong(songId);
     await this._playlistsService.checkPlaylist(playlistId, userId);
     await this._playlistSongsService.deleteSongFromPlaylist(playlistId, songId);
+    // eslint-disable-next-line max-len
+    await this._playlistSongActivitiesService.insertActivities(playlistId, songId, userId, 'delete');
 
     const response = h.response({
       status: 'success',

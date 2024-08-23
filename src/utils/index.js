@@ -4,10 +4,10 @@ const convertGetSongs = (song) => ({
   performer: song.performer,
 });
 
-// const convertGetSongsFromPlaylist = (obj) => ({
-//   id: obj.playlist_id,
-//   name: obj.playlist_name,
-//   username: obj.playlist_username,
-//   songs:
-// });
-module.exports = { convertGetSongs };
+const getActivities = (row) => ({
+  username: row.username,
+  title: row.title,
+  action: row.action,
+  time: row.time,
+});
+module.exports = { convertGetSongs, getActivities };

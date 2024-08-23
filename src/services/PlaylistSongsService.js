@@ -39,10 +39,6 @@ class PlaylistSongsService {
 
     const result = await this._pool.query(query);
 
-    // if (!result.rows.length) {
-    //   throw new NotFoundError('Playlist tidak ditemukan');
-    // }
-
     const playlist = {
       id: result.rows[0].playlist_id,
       name: result.rows[0].playlist_name,
@@ -50,7 +46,7 @@ class PlaylistSongsService {
       songs: result.rows.map(convertGetSongs),
     };
 
-    console.log(playlist);
+    // console.log(playlist);
 
     return playlist;
   }
@@ -61,9 +57,9 @@ class PlaylistSongsService {
       values: [playlistId, songId],
     };
 
-    const result = await this._pool.query(query);
+    await this._pool.query(query);
 
-    console.log('from delete playlist songs', result.rows[0]);
+    // console.log('from delete playlist songs', result.rows[0]);
   }
 }
 
