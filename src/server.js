@@ -38,12 +38,18 @@ const PlaylistSongsValidator = require('./validator/playlistSongs');
 const playlistSongActivitiesPlugin = require('./api/activities');
 const PlaylistSongActivitiesService = require('./services/PlaylistSongActivities');
 
+// collaborations
+const collaborationsPlugin = require('./api/collaborations');
+const CollaborationsService = require('./services/CollaborationsService');
+const CollaborationsValidator = require('./validator/collaborations');
+
 const init = async () => {
   const albumService = new AlbumService();
   const songService = new SongService();
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
-  const playlistsService = new PlaylistsService();
+  const collaborationsService = new CollaborationsService();
+  const playlistsService = new PlaylistsService(collaborationsService);
   const playlistSongsService = new PlaylistSongsService();
   const playlistSongActivitiesService = new PlaylistSongActivitiesService();
 
@@ -142,6 +148,15 @@ const init = async () => {
       options: {
         playlistSongActivitiesService,
         playlistsService,
+      },
+    },
+    {
+      plugin: collaborationsPlugin,
+      options: {
+        collaborationsService,
+        playlistsService,
+        usersService,
+        validator: CollaborationsValidator,
       },
     },
   ]);

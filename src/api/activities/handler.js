@@ -13,7 +13,7 @@ class PlaylistSongActivitiesHandler {
     const { id: playlistId } = request.params;
     const { id: userId } = request.auth.credentials;
 
-    await this._playlistsService.checkPlaylist(playlistId, userId);
+    await this._playlistsService.verifyPlaylistSongsAccess(playlistId, userId);
     const activities = await this._playlistSongActivitiesService.getActivities(playlistId);
 
     const response = h.response({

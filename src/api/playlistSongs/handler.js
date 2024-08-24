@@ -25,7 +25,7 @@ class PlaylistSongsHandler {
     const { id: userId } = request.auth.credentials;
 
     await this._songsService.checkSong(songId);
-    await this._playlistsService.checkPlaylist(playlistId, userId);
+    await this._playlistsService.verifyPlaylistSongsAccess(playlistId, userId);
     await this._playlistSongsService.addSongToPlaylist(playlistId, songId);
     // eslint-disable-next-line max-len
     await this._playlistSongActivitiesService.insertActivities(playlistId, songId, userId, 'add');
@@ -42,7 +42,7 @@ class PlaylistSongsHandler {
     const { id: userId } = request.auth.credentials;
     const { id: playlistId } = request.params;
 
-    await this._playlistsService.checkPlaylist(playlistId, userId);
+    await this._playlistsService.verifyPlaylistSongsAccess(playlistId, userId);
     const songsFromPlaylist = await this._playlistSongsService.getSongsFromPlaylist(playlistId);
 
     const response = h.response({
@@ -63,7 +63,7 @@ class PlaylistSongsHandler {
     const { id: userId } = request.auth.credentials;
 
     await this._songsService.checkSong(songId);
-    await this._playlistsService.checkPlaylist(playlistId, userId);
+    await this._playlistsService.verifyPlaylistSongsAccess(playlistId, userId);
     await this._playlistSongsService.deleteSongFromPlaylist(playlistId, songId);
     // eslint-disable-next-line max-len
     await this._playlistSongActivitiesService.insertActivities(playlistId, songId, userId, 'delete');
