@@ -2,7 +2,7 @@
 const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
 const InvariantError = require('../exceptions/InvariantError');
-// const { getActivities } = require('../utils');
+const { getActivities } = require('../utils');
 
 class PlaylistSongActivitiesService {
   constructor() {
@@ -29,27 +29,20 @@ class PlaylistSongActivitiesService {
 
   async getActivities(playlistId) {
     const query = {
-      text: `SELECT playlist_song_activities.playlist_id, users.username, songs.id, songs.title, playlist_song_activities.action, playlist_song_activities.time
+      text: `SELECT playlist_song_activities.playlist_id, users.username, songs.title, playlist_song_activities.action, playlist_song_activities.time
       FROM playlist_song_activities JOIN playlists ON playlist_song_activities.playlist_id = playlists.id
       JOIN users ON playlists.owner = users.id
       JOIN playlist_songs ON playlist_songs.playlist_id = playlists.id
-      JOIN songs ON playlist_songs.song_id = songs.id
+      JOIN songs ON playlist_song_activities.song_id = songs.id
       WHERE playlist_song_activities.playlist_id = $1`,
       values: [playlistId],
     };
 
     const result = await this._pool.query(query);
 
-    console.log('from activity', result.rows);
-
     const activities = {
       playlistId: result.rows[0].playlist_id,
-      activities: result.rows.map((row) => ({
-        username: row.username,
-        title: row.title,
-        action: row.action,
-        time: row.time,
-      })),
+      activities: result.rows.map(getActivities),
     };
 
     // console.log(activities);
