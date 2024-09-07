@@ -70,15 +70,6 @@ const init = async () => {
     plugin: Jwt,
   });
 
-  // server.route({
-  //   method: 'GET',
-  //   path: '/',
-  //   handler: () => 'Hello World!',
-  //   options: {
-  //     auth: 'playlistsapp_jwt',
-  //   },
-  // });
-
   server.auth.strategy('playlistsapp_jwt', 'jwt', {
     keys: process.env.ACCESS_TOKEN_KEY,
     verify: {

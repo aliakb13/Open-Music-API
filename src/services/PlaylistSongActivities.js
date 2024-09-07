@@ -20,8 +20,6 @@ class PlaylistSongActivitiesService {
 
     const result = await this._pool.query(query);
 
-    // console.log(result.rows);
-
     if (!result.rows.length) {
       throw new InvariantError('Gagal melakukan insert activities');
     }
@@ -44,8 +42,6 @@ class PlaylistSongActivitiesService {
       playlistId: result.rows[0].playlist_id,
       activities: result.rows.map(getActivities),
     };
-
-    // console.log(activities);
 
     return activities;
   }
