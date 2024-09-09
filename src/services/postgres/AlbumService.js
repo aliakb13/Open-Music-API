@@ -59,6 +59,7 @@ class AlbumService {
       name: albums.name,
       year: albums.year,
       songs: songs.map(convertGetSongs),
+      coverUrl: albums.cover,
     };
 
     return combined;
@@ -94,6 +95,15 @@ class AlbumService {
       throw new NotFoundError('Gagal menghapus album. Album tidak ditemukan!');
     }
     return result.rows[0].name;
+  }
+
+  async insertCoverAlbum(albumId, url) {
+    const query = {
+      text: 'UPDATE albums SET cover = $2 WHERE id = $1',
+      values: [albumId, url],
+    };
+
+    await this._pool.query(query);
   }
 }
 
