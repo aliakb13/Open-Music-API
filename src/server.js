@@ -5,43 +5,48 @@ const ClientError = require('./exceptions/ClientError');
 
 // albums
 const albumPlugin = require('./api/albums');
-const AlbumService = require('./services/AlbumService');
+const AlbumService = require('./services/postgres/AlbumService');
 const albumValidator = require('./validator/albums');
 
 // songs
 const songPlugin = require('./api/songs');
-const SongService = require('./services/SongService');
+const SongService = require('./services/postgres/SongService');
 const songValidator = require('./validator/songs');
 
 // users
 const userPlugin = require('./api/users');
-const UsersService = require('./services/UsersService');
+const UsersService = require('./services/postgres/UsersService');
 const userValidator = require('./validator/users');
 
 // authentications
 const authPlugin = require('./api/authentications');
-const AuthenticationsService = require('./services/AuthenticationsService');
+const AuthenticationsService = require('./services/postgres/AuthenticationsService');
 const authenticationValidator = require('./validator/authentications');
 const TokenManager = require('./tokenize/TokenManager');
 
 // playlists
 const playlistPlugin = require('./api/playlists');
-const PlaylistsService = require('./services/PlaylistsService');
+const PlaylistsService = require('./services/postgres/PlaylistsService');
 const PlaylistValidator = require('./validator/playlists');
 
 // playlist_songs
 const playlistSongsPlugin = require('./api/playlistSongs');
-const PlaylistSongsService = require('./services/PlaylistSongsService');
+const PlaylistSongsService = require('./services/postgres/PlaylistSongsService');
 const PlaylistSongsValidator = require('./validator/playlistSongs');
 
 // playlist_song_activities
 const playlistSongActivitiesPlugin = require('./api/activities');
-const PlaylistSongActivitiesService = require('./services/PlaylistSongActivities');
+const PlaylistSongActivitiesService = require('./services/postgres/PlaylistSongActivities');
 
 // collaborations
 const collaborationsPlugin = require('./api/collaborations');
-const CollaborationsService = require('./services/CollaborationsService');
+const CollaborationsService = require('./services/postgres/CollaborationsService');
 const CollaborationsValidator = require('./validator/collaborations');
+
+// exports
+const exportsPlugin = require('./api/exports');
+const ProducerService = require('./services/rabbitmq/ProducerService');
+const ExportsValidator = require('./validator/exports');
 
 const init = async () => {
   const albumService = new AlbumService();
@@ -148,6 +153,14 @@ const init = async () => {
         playlistsService,
         usersService,
         validator: CollaborationsValidator,
+      },
+    },
+    {
+      plugin: exportsPlugin,
+      options: {
+        service: ProducerService,
+        playlistsService,
+        validator: ExportsValidator,
       },
     },
   ]);

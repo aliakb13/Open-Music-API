@@ -1,8 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
-const InvariantError = require('../exceptions/InvariantError');
-const { getActivities } = require('../utils');
+const InvariantError = require('../../exceptions/InvariantError');
+const { getActivities } = require('../../utils');
 
 class PlaylistSongActivitiesService {
   constructor() {
