@@ -65,7 +65,6 @@ class SongService {
     if (!result.rows.length) {
       throw new NotFoundError('Gagal mendapatkan Lagu. Lagu tidak ditemukan!');
     }
-    // console.log(result);
 
     const song = result.rows[0];
     const newSong = {
@@ -98,7 +97,6 @@ class SongService {
       throw new NotFoundError('Gagal memperbarui lagu. Lagu tidak ditemukan!');
     }
 
-    // console.log(result.rows);
     return result.rows[0].id;
   }
 

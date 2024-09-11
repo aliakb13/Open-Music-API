@@ -24,14 +24,8 @@ class AlbumService {
     if (!result.rows[0].id) {
       throw new InvariantError('Album gagal ditambahkan');
     }
-    // console.log(typeof result.rows[0].id);
     return result.rows[0].id;
   }
-
-  // async getAlbums() {
-  //   const result = await this._pool.query('SELECT * FROM albums');
-  //   return result.rows;
-  // }
 
   async getSpecifiedAlbums(id) {
     const albumsQuery = {
@@ -72,15 +66,12 @@ class AlbumService {
       values: [name, year, updatedAt, id],
     };
 
-    // console.log(query);
-
     const result = await this._pool.query(query);
 
     if (!result.rows.length) {
       throw new NotFoundError('Gagal memperbarui album. Album tidak ditemukan!');
     }
 
-    // console.log(result);
     return result.rows[0].id;
   }
 

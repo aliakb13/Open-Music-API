@@ -43,15 +43,21 @@ class PlaylistSongsHandler {
     const { id: playlistId } = request.params;
 
     await this._playlistsService.verifyPlaylistSongsAccess(playlistId, userId);
-    const songsFromPlaylist = await this._playlistSongsService.getSongsFromPlaylist(playlistId);
+    const { isCache, data } = await this._playlistSongsService.getSongsFromPlaylist(playlistId);
 
     const response = h.response({
       status: 'success',
       data: {
-        playlist: songsFromPlaylist,
+        playlist: data,
       },
     });
     response.code(200);
+
+    if (isCache) {
+      response.header('X-Data-Source', 'cache');
+    } else {
+      response.header('X-Data-Source', 'not-cache');
+    }
     return response;
   }
 

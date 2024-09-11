@@ -31,22 +31,18 @@ class SongsHandler {
 
     if (title && performer) {
       songsQuery = await this._service.getSongs(title, performer);
-      // console.log('title and performer was passed');
     }
 
     if (title && !performer) {
       songsQuery = await this._service.getSongs(title, null);
-      // console.log('title was passed and performer was null');
     }
 
     if (!title && performer) {
       songsQuery = await this._service.getSongs(null, performer);
-      // console.log('title was null and performer was passed');
     }
 
     if (!title && !performer) {
       songsQuery = await this._service.getSongs();
-      // console.log('title and performer was null');
     }
 
     const mapSongs = songsQuery.map(convertGetSongs);
@@ -59,7 +55,6 @@ class SongsHandler {
   }
 
   async getSongByIdHandler(request, h) {
-    // this._validator.validateSongPayload(request.payload);
     const { id } = request.params;
 
     const song = await this._service.getSongById(id);

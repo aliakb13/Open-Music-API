@@ -1,5 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 const autoBind = require('auto-bind');
+const config = require('../../utils/config');
 
 class UploadsHandler {
   constructor(service, albumService, validator) {
@@ -22,7 +23,7 @@ class UploadsHandler {
 
     const filename = await this._service.writeFile(file, file.hapi);
 
-    const url = `http://${process.env.HOST}:${process.env.PORT}/upload/images/${filename}`;
+    const url = `http://${config.app.host}:${config.app.port}/upload/images/${filename}`;
 
     await this._albumService.insertCoverAlbum(albumId, url);
 

@@ -5,8 +5,9 @@ const { convertGetSongs } = require('../../utils');
 // const NotFoundError = require('../exceptions/NotFoundError');
 
 class PlaylistSongsService {
-  constructor() {
+  constructor(cacheService) {
     this._pool = new Pool();
+    this._cacheService = cacheService;
   }
 
   async addSongToPlaylist(playlistId, songId) {
@@ -19,36 +20,48 @@ class PlaylistSongsService {
 
     await this._pool.query(query);
 
-    // console.log('from add playlist songs', result.rows[0]);
+    await this._cacheService.delete(`playlistSongs:${playlistId}`);
   }
 
   async getSongsFromPlaylist(playlistId) {
-    const query = {
-      text: `SELECT
-      playlists.id AS playlist_id,
-      playlists.name AS playlist_name,
-      users.username AS username,
-      songs.id AS id, songs.title AS title, songs.performer
-      FROM playlists 
-      JOIN users ON playlists.owner = users.id
-      JOIN playlist_songs ON playlists.id = playlist_songs.playlist_id
-      JOIN songs ON playlist_songs.song_id = songs.id
-      WHERE playlists.id = $1`,
-      values: [playlistId],
-    };
+    try {
+      const result = await this._cacheService.get(`playlistSongs:${playlistId}`);
+      const parsedData = JSON.parse(result);
+      return {
+        isCache: true,
+        data: parsedData,
+      };
+    } catch (error) {
+      const query = {
+        text: `SELECT
+        playlists.id AS playlist_id,
+        playlists.name AS playlist_name,
+        users.username AS username,
+        songs.id AS id, songs.title AS title, songs.performer
+        FROM playlists 
+        JOIN users ON playlists.owner = users.id
+        JOIN playlist_songs ON playlists.id = playlist_songs.playlist_id
+        JOIN songs ON playlist_songs.song_id = songs.id
+        WHERE playlists.id = $1`,
+        values: [playlistId],
+      };
 
-    const result = await this._pool.query(query);
+      const result = await this._pool.query(query);
 
-    const playlist = {
-      id: result.rows[0].playlist_id,
-      name: result.rows[0].playlist_name,
-      username: result.rows[0].username,
-      songs: result.rows.map(convertGetSongs),
-    };
+      const playlist = {
+        id: result.rows[0].playlist_id,
+        name: result.rows[0].playlist_name,
+        username: result.rows[0].username,
+        songs: result.rows.map(convertGetSongs),
+      };
 
-    // console.log(playlist);
+      await this._cacheService.set(`playlistSongs:${playlistId}`, JSON.stringify(playlist));
 
-    return playlist;
+      return {
+        isCache: false,
+        data: playlist,
+      };
+    }
   }
 
   async deleteSongFromPlaylist(playlistId, songId) {
@@ -59,7 +72,7 @@ class PlaylistSongsService {
 
     await this._pool.query(query);
 
-    // console.log('from delete playlist songs', result.rows[0]);
+    await this._cacheService.delete(`playlistSongs:${playlistId}`);
   }
 }
 

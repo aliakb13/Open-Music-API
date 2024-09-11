@@ -28,7 +28,7 @@ class PlaylistsHandler {
   async getPlaylistsHandler(request, h) {
     const { id: userId } = request.auth.credentials;
 
-    const playlists = await this._playlistsService.getPlaylists(userId);
+    const { isCache, data: playlists } = await this._playlistsService.getPlaylists(userId);
 
     const response = h.response({
       status: 'success',
@@ -37,6 +37,12 @@ class PlaylistsHandler {
       },
     });
     response.code(200);
+
+    if (isCache) {
+      response.header('X-Data-Source', 'cache');
+    } else {
+      response.header('X-Data-Source', 'not-cache');
+    }
     return response;
   }
 

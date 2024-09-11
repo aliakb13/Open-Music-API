@@ -4,6 +4,7 @@ const Jwt = require('@hapi/jwt');
 const Inert = require('@hapi/inert');
 const path = require('path');
 const ClientError = require('./exceptions/ClientError');
+const config = require('./utils/config');
 
 // albums
 const albumPlugin = require('./api/albums');
@@ -63,24 +64,21 @@ const AlbumLikesService = require('./services/postgres/AlbumLikesService');
 const CacheService = require('./services/redis/CacheService');
 
 const init = async () => {
+  const cacheService = new CacheService();
   const albumService = new AlbumService();
   const songService = new SongService();
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
-  const collaborationsService = new CollaborationsService();
-  const playlistsService = new PlaylistsService(collaborationsService);
-  const playlistSongsService = new PlaylistSongsService();
+  const collaborationsService = new CollaborationsService(cacheService);
+  const playlistsService = new PlaylistsService(collaborationsService, cacheService);
+  const playlistSongsService = new PlaylistSongsService(cacheService);
   const playlistSongActivitiesService = new PlaylistSongActivitiesService();
   const storageService = new StorageService(path.resolve(__dirname, 'api/uploads/file/images'));
-  const cacheService = new CacheService();
   const albumLikesService = new AlbumLikesService(cacheService);
 
   const server = Hapi.server({
-    port: process.env.PORT,
-    host: process.env.HOST,
-    // debug: {
-    //   request: ['error'],
-    // },
+    port: config.app.port,
+    host: config.app.host,
     routes: {
       cors: {
         origin: ['*'],
