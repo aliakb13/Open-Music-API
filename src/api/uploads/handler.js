@@ -18,6 +18,8 @@ class UploadsHandler {
 
     const { id: albumId } = request.params;
 
+    this._albumService.checkAlbum(albumId);
+
     const filename = await this._service.writeFile(file, file.hapi);
 
     const url = `http://${process.env.HOST}:${process.env.PORT}/upload/images/${filename}`;

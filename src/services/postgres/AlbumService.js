@@ -97,6 +97,19 @@ class AlbumService {
     return result.rows[0].name;
   }
 
+  async checkAlbum(albumId) {
+    const query = {
+      text: 'SELECT * FROM albums WHERE id = $1',
+      values: [albumId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rows.length) {
+      throw new NotFoundError('Album tidak ditemukan');
+    }
+  }
+
   async insertCoverAlbum(albumId, url) {
     const query = {
       text: 'UPDATE albums SET cover = $2 WHERE id = $1',
